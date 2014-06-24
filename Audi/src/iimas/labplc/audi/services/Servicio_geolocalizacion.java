@@ -1,5 +1,6 @@
 package iimas.labplc.audi.services;
 
+import iimas.labplc.audi.Audi_activity_main;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -14,16 +15,15 @@ import android.os.Message;
 import android.widget.Toast;
 
 public class Servicio_geolocalizacion extends Service implements Runnable{
-	/*
-	 * Declaracion de variables
+	/**
+	 * Declaraci—n de variables
 	 */
-	//protected static MainActivity mainActivity;
+	public static Audi_activity_main taxiActivity;
 	private LocationManager mLocationManager;
 	private MyLocationListener mLocationListener;
 	private Location currentLocation = null;
 	private Thread thread;
 
-	
     @Override
     public void onCreate() {
           Toast.makeText(this,"Servicio creado", Toast.LENGTH_SHORT).show();
@@ -45,7 +45,7 @@ public class Servicio_geolocalizacion extends Service implements Runnable{
 		if (mLocationManager != null)
 			if (mLocationListener != null)
 				mLocationManager.removeUpdates(mLocationListener);
-		
+
         Toast.makeText(this,"Servicio detenido ",Toast.LENGTH_SHORT).show();
     	    super.onDestroy();
        
@@ -66,47 +66,49 @@ public class Servicio_geolocalizacion extends Service implements Runnable{
 			updateLocation(currentLocation);
 		}
 	};
-	
-	
+
+
 	/**
-	 * metodo para actualizar la localizacion
+	 * metodo para actualizar la localizaci—n
 	 * 
 	 * @param currentLocation
 	 * @return void
 	 */
 	public void updateLocation(Location currentLocation) {
 		if (currentLocation != null) {
-			double latitud = Double.parseDouble(currentLocation.getLatitude() + ""); //Obtiene la latitud
-			double longitud = Double.parseDouble(currentLocation.getLongitude() + ""); //Obtiene la longitud
+			double latitud = Double.parseDouble(currentLocation.getLatitude() + "");
+			double longitud = Double.parseDouble(currentLocation.getLongitude() + "");
+			getApplicationContext().sendBroadcast(new Intent("key").putExtra("coordenadas", latitud + ";"+ longitud));
 
-			getApplicationContext().sendBroadcast(
-					new Intent("key").putExtra("coordenadas", latitud + ";"
-							+ longitud + ";"));
+
 		}
 	}
 
-	
+
 	/**
 	 * Hilo de la aplicacion para cargar las cordenadas del usuario
 	 */
 	public void run() {
-		if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+		if (mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
 			Looper.prepare();
-			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 4000, 0, mLocationListener);
+			mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 4000, 0, mLocationListener);
 			Looper.loop();
 			Looper.myLooper().quit();
-		} /*else {
-			mainActivity.runOnUiThread(new Runnable() {
+		} else {
+			taxiActivity.runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
 					Toast.makeText(getApplicationContext(), "GPS apagado inesperadamente", Toast.LENGTH_LONG).show();			
 				}
 			});
-		}*/
+		}
 	}
-	
+
+
+
+
 	/**
-	 * Metodo para Obtener la seÒal del GPS
+	 * Metodo para Obtener la se–al del GPS
 	 */
 	private void obtenerSenalGPS() {
 		thread = new Thread(this);
@@ -137,12 +139,12 @@ public class Servicio_geolocalizacion extends Service implements Runnable{
 		 * metodo que revisa si el GPS esta apagado
 		 */
 		public void onProviderDisabled(String provider) {
-//			mainActivity.runOnUiThread(new Runnable() {
-//				@Override
-//				public void run() {
-//					Toast.makeText(getApplicationContext(), "GPS apagado inesperadamente", Toast.LENGTH_LONG).show();			
-//				}
-//			});
+			taxiActivity.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					Toast.makeText(getApplicationContext(), "GPS apagado inesperadamente", Toast.LENGTH_LONG).show();			
+				}
+			});
 		}
 
 		// @Override
