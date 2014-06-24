@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Audi</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="esperando">Esperando ....</string>
+    <string name="detenerServicio">Detener Servicio</string>
+    <string name="iniciarServicio">Iniciar Servicio</string>
+    <string name="localizarme">Servicio de geolocalizacion</string>
+</resources>
